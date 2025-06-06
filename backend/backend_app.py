@@ -1,5 +1,8 @@
+from pyexpat.errors import messages
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from werkzeug.exceptions import NotFound
 
 app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
@@ -44,6 +47,24 @@ def delete_post(id):
             POSTS.remove(post)
             return jsonify({"message": f"Post with id: {id} has been deleted successfully."}), 200
     return jsonify({"message": f"Post with id: {id} does not exist!"}), 404
+
+
+@app.route('/api/posts/<id>', methods=['PUT'])
+def update_post(id):
+    data = request.get_json()
+    post = next((post for post in POSTS if str(post['id']) == str(id)), None)
+    if not post:
+        raise NotFound(description=f"Error: Post with ID {id} not found.")
+
+    title = data.get('title', post['title']).strip()
+    content = data.get('content', post['content']).strip()
+
+    # Update
+    post['title'] = title
+    post['content'] = content
+    return jsonify(post), 200
+
+
 
 
 
