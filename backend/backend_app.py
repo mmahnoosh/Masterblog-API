@@ -54,7 +54,7 @@ def update_post(id):
     data = request.get_json()
     post = next((post for post in POSTS if str(post['id']) == str(id)), None)
     if not post:
-        raise NotFound(description=f"Error: Post with ID {id} not found.")
+        return jsonify(f"Error: Post with ID {id} not exist.")
 
     title = data.get('title', post['title']).strip()
     content = data.get('content', post['content']).strip()
@@ -65,7 +65,23 @@ def update_post(id):
     return jsonify(post), 200
 
 
+@app.route('/api/posts/search', methods=['GET'])
+def search_post():
+    new_post_list = []
+    title = request.args.get('title', None)
+    content = request.args.get('content', None)
 
+    title = title.lower() if title else None
+    content = content.lower() if content else None
+
+    for post in POSTS:
+        post_title = post['title'].lower()
+        post_content = post['content'].lower()
+
+        if (title and title in post_title) or (content and content in post_content):
+            new_post_list.append(post)
+
+    return jsonify(new_post_list), 200
 
 
 
