@@ -1,9 +1,15 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def home():
+    """
+       Render the homepage.
+
+       Returns:
+           Rendered 'index.html' template for the root URL.
+    """
     return render_template("index.html")
 
 
